@@ -142,6 +142,10 @@ def _prepare_module_dict(model: torch.nn.Module, fx_graph):
             if isinstance(attr, nn.Module):
                 module_dict[node.target] = nn.Module()
                 special_nodes.append(node)
+            #; the original design fails to 
+            #; trace any Tensor object
+            elif isinstance(attr, torch.Tensor):
+                module_dict[node.target] = attr
         elif node.op == 'call_method':
             for special_node in special_nodes:
                 if special_node in node.args or \
